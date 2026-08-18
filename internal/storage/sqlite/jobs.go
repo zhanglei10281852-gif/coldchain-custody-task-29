@@ -132,10 +132,9 @@ func (q *queries) ExpireHandoffs(ctx context.Context, now time.Time, limit int) 
 		if err := handoff.Resolve(domain.HandoffExpired, "handoff expired before acceptance", now); err != nil {
 			return nil, err
 		}
-		persistedStatus := handoff.PersistedExpiryStatus()
-		result, err := q.q.ExecContext(ctx, `UPDATE custody_handoffs SET status = ?, resolved_at = ?,
+		result, err := q.q.ExecContext(ctx, `UPDATE custody_handoffs SET status = 'expired', resolved_at = ?,
             resolution_note = ?, version = version + 1, updated_at = ? WHERE id = ? AND version = ? AND status = 'pending'`,
-			persistedStatus, formatTime(now), handoff.ResolutionNote, formatTime(now), handoff.ID, expected)
+			formatTime(now), handoff.ResolutionNote, formatTime(now), handoff.ID, expected)
 		if err != nil {
 			return nil, translateError("expire handoff", err)
 		}

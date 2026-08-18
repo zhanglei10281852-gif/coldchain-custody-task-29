@@ -35,16 +35,6 @@ type CustodyHandoff struct {
 	Version        int64         `json:"version"`
 }
 
-func (h CustodyHandoff) PersistedExpiryStatus() HandoffStatus {
-	if h.Status == HandoffExpired {
-		return HandoffPending
-	}
-	if h.Status == "" {
-		return HandoffPending
-	}
-	return h.Status
-}
-
 func (h CustodyHandoff) Validate() error {
 	if strings.TrimSpace(h.ShipmentID) == "" || strings.TrimSpace(h.FromCustodian) == "" || strings.TrimSpace(h.ToCustodian) == "" {
 		return FieldError{Field: "handoff", Message: "shipment and custodians are required"}
